@@ -1,0 +1,165 @@
+:root {
+    --gold: #d4af37;
+    --black: #0d0d0d;
+    --card-bg: #1a1a1a;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --white: #ffffff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--black);
+    color: var(--white);
+    font-family: 'Poppins', sans-serif;
+    padding-bottom: 50px;
+}
+
+header {
+    background: linear-gradient(to bottom, #000, #1a1a1a);
+    padding: 30px;
+    text-align: center;
+    border-bottom: 2px solid var(--gold);
+}
+
+.logo { font-family: 'Bebas Neue'; color: var(--gold); font-size: 1.5rem; letter-spacing: 2px; }
+h1 { font-family: 'Bebas Neue'; font-size: 1.8rem; margin-top: 10px; }
+
+.container { width: 95%; max-width: 600px; margin: 20px auto; }
+
+.form-section {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    border-left: 5px solid var(--gold);
+}
+
+.grid-form input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #222;
+    border: 1px solid #333;
+    color: white;
+    border-radius: 8px;
+}
+
+.btn-add {
+    width: 100%;
+    padding: 15px;
+    background: var(--gold);
+    border: none;
+    font-family: 'Bebas Neue';
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.btn-add:hover { filter: brightness(1.2); }
+
+/* Tarjetas de Préstamos */
+.prestamo-card {
+    background: var(--card-bg);
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    position: relative;
+}
+
+.status-indicator {
+    height: 10px;
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.card-header { display: flex; justify-content: space-between; align-items: center; }
+.card-header h4 { font-size: 1.1rem; color: var(--gold); }
+
+.card-body { margin-top: 10px; font-size: 0.9rem; color: #bbb; }
+.card-body b { color: white; }
+
+.card-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-ws { background: #25d366; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-size: 0.8rem; }
+.btn-del { background: var(--red); color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
+
+footer { text-align: center; font-size: 0.7rem; color: #555; margin-top: 30px; }
+.saldo-display {
+    background: #000;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0;
+    font-weight: bold;
+    color: #888;
+}
+
+.saldo-display span {
+    color: var(--gold);
+    font-size: 1.2rem;
+}
+
+.monto-total {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.btn-pago {
+    background: var(--gold);
+    color: black;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.8rem;
+    flex-grow: 1;
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.btn-ws {
+    background: #25d366;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+}
+.select-patric {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #222;
+    border: 1px solid #333;
+    color: var(--gold); 
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    appearance: none; 
+}
+
+.badge-frecuencia {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #333;
+    color: var(--gold);
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
