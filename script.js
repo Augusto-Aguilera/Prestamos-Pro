@@ -1,6 +1,7 @@
+// Cargar datos desde LocalStorage
 let prestamos = JSON.parse(localStorage.getItem('patric_prestamos')) || [];
 
-// Función para registrar un nuevo préstamo
+// Función para registrar nuevo préstamo
 function agregarPrestamo() {
     const nombre = document.getElementById('nombre').value;
     const monto = document.getElementById('monto').value;
@@ -9,142 +10,142 @@ function agregarPrestamo() {
     const interes = document.getElementById('interes').value;
     const empeno = document.getElementById('empeno').value || "Ninguno";
 
-    // Validación básica
     if(!nombre || !monto || !vencimiento) {
-        alert("¡Atención! Por favor completá nombre, monto y fecha de vencimiento.");
+        alert("¡Error de PATRIC SOFT! Completá Nombre, Monto y Vencimiento.");
         return;
     }
 
-    const nuevoPrestamo = {
+    const nuevo = {
         id: Date.now(),
         nombre: nombre.trim(),
         monto: parseFloat(monto),
-        saldo: parseFloat(monto), // El saldo inicial es igual al monto total
-        frecuencia: frecuencia,
-        vencimiento: vencimiento,
+        saldo: parseFloat(monto),
+        frecuencia,
+        vencimiento,
         interes: parseFloat(interes) || 0,
         empeno: empeno.trim()
     };
 
-    // Guardar en el array
-    prestamos.push(nuevoPrestamo);
-    
-    // Guardar en LocalStorage y actualizar la vista
+    prestamos.push(nuevo);
     guardarYMostrar();
-    
-    // Limpiar los campos para el próximo registro
     limpiarFormulario();
 }
 
-// Función para registrar un pago (descontar del saldo)
+// Función para cobrar cuota
 function abonar(id) {
     const index = prestamos.findIndex(p => p.id === id);
-    const cliente = prestamos[index];
-
-    const montoAbono = prompt(`Registrar pago para ${cliente.nombre}\nSaldo actual: $${cliente.saldo}\n¿Cuánto está pagando hoy? ($)`);
+    const montoAbono = prompt(`Cobro para ${prestamos[index].nombre}\nSaldo Pendiente: $${prestamos[index].saldo}\n¿Cuánto paga hoy?`);
     
     if (montoAbono === null || montoAbono === "" || isNaN(montoAbono)) return;
-
-    const abonoNum = parseFloat(montoAbono);
-
-    if (abonoNum <= 0) {
-        alert("El monto debe ser mayor a cero.");
-        return;
-    }
-
-    if (abonoNum > cliente.saldo) {
-        alert("¡Error! El abono no puede ser superior al saldo pendiente.");
-        return;
-    }
-
-    // Proceso de descuento
-    prestamos[index].saldo -= abonoNum;
     
-    if (prestamos[index].saldo === 0) {
-        alert("✅ ¡FELICITACIONES! El crédito de " + cliente.nombre + " ha sido cancelado en su totalidad.");
+    const abonoNum = parseFloat(montoAbono);
+    if (abonoNum > prestamos[index].saldo) {
+        alert("¡Ojo! El abono no puede superar la deuda.");
+        return;
     }
 
+    prestamos[index].saldo -= abonoNum;
     guardarYMostrar();
 }
 
-// Función para eliminar un registro
+// Función para eliminar cliente
 function eliminar(id) {
-    if(confirm("¿Estás seguro de eliminar este préstamo? Esta acción no se puede deshacer.")) {
+    if(confirm("¿Seguro que querés eliminar este cliente de la cartera?")) {
         prestamos = prestamos.filter(p => p.id !== id);
         guardarYMostrar();
     }
 }
 
-// Función principal para renderizar las tarjetas en pantalla
+// FUNCIÓN DE AVISO MASIVO (Solo abre para los que están en alerta)
+function avisoMasivo() {
+    const hoy = new Date();
+    const paraAvisar = prestamos.filter(p => {
+        const fechaVenc = new Date(p.vencimiento + "T00:00:00");
+        const diffTiempo = fechaVenc - hoy;
+        const diffDias = Math.ceil(diffTiempo / (1000 * 60 * 60 * 24));
+        return diffDias <= 3 && diffDias >= 0 && p.saldo > 0;
+    });
+
+    if (paraAvisar.length === 0) return;
+
+    alert(`PATRIC SOFT preparará ${paraAvisar.length} recordatorios de WhatsApp.`);
+    
+    paraAvisar.forEach(p => {
+        const msg = `Hola ${p.nombre}, te recordamos de PATRIC SOFT que tu pago ${p.frecuencia.toLowerCase()} vence el ${p.vencimiento}. Saldo: $${p.saldo}.`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    });
+}
+
+// Función Renderizadora
 function guardarYMostrar() {
-    // Persistencia de datos
     localStorage.setItem('patric_prestamos', JSON.stringify(prestamos));
     
-    const container = document.getElementById('listaPrestamos');
-    container.innerHTML = "";
-
-    // Obtenemos la fecha de hoy para el control semafórico
-    const hoy = new Date().toISOString().split('T')[0];
+    const containerGral = document.getElementById('listaPrestamos');
+    const containerAlertas = document.getElementById('listaAlertas');
+    const alertasSection = document.getElementById('alertasSection');
+    
+    containerGral.innerHTML = "";
+    containerAlertas.innerHTML = "";
+    
+    const hoy = new Date();
+    const hoyStr = hoy.toISOString().split('T')[0];
+    let hayAlertas = false;
 
     prestamos.forEach(p => {
-        // Lógica de colores de estado
-        let colorStatus = "#2ecc71"; // Verde (Al día)
-        if (p.vencimiento < hoy && p.saldo > 0) {
-            colorStatus = "#e74c3c"; // Rojo (Vencido)
-        } else if (p.vencimiento === hoy && p.saldo > 0) {
-            colorStatus = "#f1c40f"; // Amarillo (Vence hoy)
-        }
-        
-        // Si el saldo es 0, siempre es verde brillante (Cancelado)
-        if (p.saldo === 0) colorStatus = "#00ff88";
+        // Cálculo de días para alertas
+        const fechaVenc = new Date(p.vencimiento + "T00:00:00");
+        const diffTiempo = fechaVenc - hoy;
+        const diffDias = Math.ceil(diffTiempo / (1000 * 60 * 60 * 24));
 
-        container.innerHTML += `
+        // 1. CARGA DE ALERTAS (Visual solamente)
+        if (diffDias <= 3 && diffDias >= 0 && p.saldo > 0) {
+            hayAlertas = true;
+            containerAlertas.innerHTML += `
+                <div class="card-alerta-mini">
+                    <h5>${p.nombre.toUpperCase()}</h5>
+                    <p>Faltan: <b>${diffDias} días</b></p>
+                    <p>Debe: <b>$${p.saldo}</b></p>
+                </div>
+            `;
+        }
+
+        // 2. CARGA DE CARTERA GENERAL (Gestión total)
+        let colorStatus = "#2ecc71"; // Verde
+        if (p.vencimiento < hoyStr && p.saldo > 0) colorStatus = "#e74c3c"; // Rojo
+        else if (p.vencimiento === hoyStr && p.saldo > 0) colorStatus = "#f1c40f"; // Amarillo
+        if (p.saldo === 0) colorStatus = "#00ff88"; // Pagado
+
+        containerGral.innerHTML += `
             <div class="prestamo-card" style="border-right: 5px solid ${colorStatus}">
                 <div class="badge-frecuencia">${p.frecuencia}</div>
-                
                 <div class="card-header">
                     <h4>${p.nombre.toUpperCase()}</h4>
-                    <span class="monto-total">Crédito inicial: $${p.monto}</span>
+                    <span style="font-size:0.7rem; color:#666;">Original: $${p.monto}</span>
                 </div>
-
                 <div class="card-body">
-                    <div class="saldo-display">
-                        SALDO PENDIENTE: <span>$${p.saldo}</span>
-                    </div>
-                    <p><i class="far fa-calendar-alt"></i> Próx. Vencimiento: <b>${p.vencimiento}</b></p>
-                    <p><i class="fas fa-percentage"></i> Interés Mora: <b>${p.interes}%</b></p>
+                    <div class="saldo-display">SALDO: <span>$${p.saldo}</span></div>
+                    <p><i class="far fa-calendar-alt"></i> Próximo Venc: <b>${p.vencimiento}</b></p>
                     <p><i class="fas fa-hand-holding-usd"></i> Empeño: <b>${p.empeno}</b></p>
                 </div>
-
                 <div class="card-actions">
-                    <button onclick="abonar(${p.id})" class="btn-pago">
-                        <i class="fas fa-cash-register"></i> COBRAR
-                    </button>
-                    
-                    <a href="https://wa.me/?text=Hola%20${p.nombre},%20desde%20PATRIC%20SOFT%20te%20recordamos%20que%20tu%20pago%20${p.frecuencia.toLowerCase()}%20vence%20el%20${p.vencimiento}.%20Tu%20saldo%20actual%20es%20de%20$${p.saldo}." 
-                       target="_blank" 
-                       class="btn-ws">
-                        <i class="fab fa-whatsapp"></i>
-                    </a>
-
-                    <button onclick="eliminar(${p.id})" class="btn-del">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <button onclick="abonar(${p.id})" class="btn-pago">COBRAR</button>
+                    <a href="https://wa.me/?text=Hola%20${p.nombre},%20tu%20saldo%20actual%20es%20$${p.saldo}" class="btn-ws" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    <button onclick="eliminar(${p.id})" class="btn-del"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
         `;
     });
+
+    alertasSection.style.display = hayAlertas ? "block" : "none";
 }
 
-// Función para limpiar los campos del formulario
 function limpiarFormulario() {
     document.getElementById('nombre').value = "";
     document.getElementById('monto').value = "";
     document.getElementById('vencimiento').value = "";
     document.getElementById('interes').value = "";
     document.getElementById('empeno').value = "";
-    document.getElementById('frecuencia').selectedIndex = 0;
 }
 
-// Ejecutar al cargar la página
+// Iniciar app
 window.onload = guardarYMostrar;
