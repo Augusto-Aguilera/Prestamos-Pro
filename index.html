@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prestamos Pro | PATRIC SOFT ®</title>
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2489/2489756.png" type="image/x-icon">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2489/2489756.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2489/2489756.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2489/2489756.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -21,23 +21,35 @@
     <section class="form-section">
         <h3><i class="fas fa-plus-circle"></i> Nuevo Préstamo</h3>
         <div class="grid-form">
-    <input type="text" id="nombre" placeholder="Nombre del Cliente">
-    <input type="number" id="monto" placeholder="Monto Prestado ($)">
-    <select id="frecuencia" class="select-patric">
-        <option value="Semanal">Cobro: Semanal</option>
-        <option value="Quincenal">Cobro: Quincenal</option>
-        <option value="Mensual">Cobro: Mensual</option>
-        <option value="Diario">Cobro: Diario</option>
-    </select>
-    <input type="date" id="vencimiento" title="Fecha de Próximo Vencimiento">
-    <input type="number" id="interes" placeholder="% Interés Moratorio">
-    <input type="text" id="empeno" placeholder="Objeto de Empeño (Opcional)">
-    <button onclick="agregarPrestamo()" class="btn-add">REGISTRAR CRÉDITO</button>
-</div>
+            <input type="text" id="nombre" placeholder="Nombre del Cliente">
+            <input type="number" id="monto" placeholder="Monto Prestado ($)">
+            <select id="frecuencia" class="select-patric">
+                <option value="Semanal">Cobro: Semanal</option>
+                <option value="Quincenal">Cobro: Quincenal</option>
+                <option value="Mensual">Cobro: Mensual</option>
+                <option value="Diario">Cobro: Diario</option>
+            </select>
+            <input type="date" id="vencimiento" title="Fecha de Vencimiento">
+            <input type="number" id="interes" placeholder="% Interés Moratorio">
+            <input type="text" id="empeno" placeholder="Objeto de Empeño (Opcional)">
+            <button onclick="agregarPrestamo()" class="btn-add">REGISTRAR CRÉDITO</button>
+        </div>
+    </section>
+
+    <section id="alertasSection" class="alert-section" style="display:none;">
+        <div class="alert-header">
+            <h3><i class="fas fa-bell"></i> PRÓXIMOS COBROS (3 DÍAS)</h3>
+            <button onclick="avisoMasivo()" class="btn-aviso-all">
+                <i class="fab fa-whatsapp"></i> AVISAR A TODOS
+            </button>
+        </div>
+        <div id="listaAlertas" class="alertas-grid">
+            </div>
+        <hr style="border: 1px solid #333; margin: 20px 0;">
     </section>
 
     <section class="list-section">
-        <h3><i class="fas fa-list-ul"></i> Cartera de Clientes</h3>
+        <h3><i class="fas fa-list-ul"></i> CARTERA GENERAL DE CLIENTES</h3>
         <div id="listaPrestamos" class="prestamos-container">
             </div>
     </section>
